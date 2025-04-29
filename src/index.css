@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* @layer base {
+  @media (max-width: 639px) {
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .content {
+      flex: 1;
+    }
+  }
+  @keyframes slideDown {
+    0% {
+      top: -50px;
+      opacity: 0;
+    }
+    50% {
+      top: 20px;
+      opacity: 0.5;
+    }
+    100% {
+      top: 20px;
+      opacity: 1;
+    }
+  }
+  
+  .alert-slide {
+    position: relative;
+    animation: slideDown 3s ease-out forwards;
+  }
+} */
+
+
