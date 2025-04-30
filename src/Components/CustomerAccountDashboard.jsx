@@ -4,6 +4,7 @@ import { fetchAccountTransactionRequest } from "../redux/slices/createAccountSli
 import { fetchCustomerAccountRequest } from '../redux/slices/depositSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolderOpen, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import { FaWhatsapp } from 'react-icons/fa';
 
 
 import Loader from "./Loader";
@@ -56,16 +57,29 @@ const CustomerAccountDashboard = () => {
         <p className="text-gray-700"><strong>Name:</strong> {customerName}</p>
         <p className="text-gray-700"><strong>Account Number:</strong> {deposit?.account?.accountNumber}</p>
         <p className="text-gray-700"><strong>Total Balance:</strong> ₦{deposit?.account?.ledgerBalance}</p>
-        <p className="text-gray-700">
-          <strong>Available Balance:</strong> ₦{deposit?.account?.availableBalance} 
-          <button
-          onClick={() => accountTransaction(deposit?.account?._id)}
-          className="text-blue-600 hover:underline ml-1"
-        >
-          <FontAwesomeIcon icon={faFolderOpen} title="View Transactions"/>
-        </button>
-  
-        </p>
+        <div className="flex items-center text-gray-700 gap-3 flex-wrap">
+  <span>
+    <strong>Available Balance:</strong> ₦{deposit?.account?.availableBalance}
+  </span>
+
+  <button
+    onClick={() => accountTransaction(deposit?.account?._id)}
+    className="text-blue-600 hover:underline flex items-center"
+  >
+    <FontAwesomeIcon icon={faFolderOpen} title="View Transactions" />
+  </button>
+
+  <a
+    href="https://wa.me/08031313024"
+    target="_blank"
+    rel="noreferrer"
+    className="text-xl text-green-600 hover:text-blue-700"
+    title="Chat on WhatsApp"
+  >
+    <FaWhatsapp />
+  </a>
+</div>
+
       </header>
 
       {/* Main Content */}
