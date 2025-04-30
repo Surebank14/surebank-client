@@ -70,7 +70,7 @@ const CustomerAccountDashboard = () => {
   </button>
 
   <a
-    href="https://wa.me/08026211164"
+    href="https://wa.me/+2348026211164"
     target="_blank"
     rel="noreferrer"
     className="text-xl text-green-600 hover:text-blue-700"
