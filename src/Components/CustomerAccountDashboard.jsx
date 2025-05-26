@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAccountTransactionRequest } from "../redux/slices/createAccountSlice";
 import { fetchCustomerAccountRequest } from '../redux/slices/depositSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faCircleInfo, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen, faCircleInfo, faTimes, faLandmark } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from 'react-icons/fa';
 import Loader from "./Loader";
 import Tablebody from "./Table/TransactionTableBody";
 import Tablehead from "./Table/TransactionTableHead";
 import { useParams } from "react-router-dom";
+import advertImage from '../images/rent image.jpg'
 
 const CustomerAccountDashboard = () => {
   const { customerId } = useParams();
@@ -84,9 +85,10 @@ const CustomerAccountDashboard = () => {
      
       {/* Header */}
       <header className="mb-6 mt-4 md:mt-6 bg-white p-4 rounded-lg shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-800">Customer Account Dashboard</h1>
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+  <strong>Welcome,</strong> {customerName}
+</h1>
         <div className="mt-3 space-y-2 text-gray-700">
-          <p><strong>Name:</strong> {customerName}</p>
           <p><strong>Account Number:</strong> {deposit?.account?.accountNumber}</p>
           <p><strong>Total Balance:</strong> ₦{deposit?.account?.ledgerBalance}</p>
           <div className="flex items-center gap-3 flex-wrap">
@@ -114,6 +116,46 @@ const CustomerAccountDashboard = () => {
         </div>
       </header>
 
+   {/* Commercial Bank Details Section */}
+<div className="mb-6 bg-gradient-to-r from-indigo-700 to-blue-800 text-white p-5 rounded-xl shadow-lg">
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+    <div className="flex items-center mb-3 md:mb-0">
+      <FontAwesomeIcon icon={faLandmark} className="text-2xl mr-3" />
+      <div>
+        <h2 className="text-2xl font-bold">Comertial Bank Details</h2>
+      </div>
+    </div>
+  
+  </div>
+  
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+    {/* Bank Account Information */}
+    <div className="bg-white bg-opacity-10 p-4 rounded-lg">
+      <h3 className="font-semibold mb-2 flex items-center">
+        <FontAwesomeIcon icon={faCircleInfo} className="mr-2" />
+        Account Details
+      </h3>
+      <div className="space-y-2">
+        <div>
+          <p className="text-xs opacity-80">Bank Name</p>
+          <p className="font-medium">Fidelity Bank</p>
+        </div>
+        <div>
+          <p className="text-xs opacity-80">Account Name</p>
+          <p className="font-medium">EASYTOBUY</p>
+        </div>
+        <div>
+          <p className="text-xs opacity-80">Account Number</p>
+          <p className="font-medium">5601049851</p>
+        </div>
+      </div>
+    </div>
+
+    
+ 
+  </div>
+</div>
+
       {/* Account Type Quick Info */}
       <div className="flex space-x-2 mb-4">
         <div 
@@ -137,15 +179,23 @@ const CustomerAccountDashboard = () => {
         >
           FD
         </div>
+  
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Panel - Account Details */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Accounts</h2>
+        <div className="bg-white p-4 rounded-lg shadow-sm md:col-span-2">
+        <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2 flex items-center gap-3">
+  <strong>Accounts</strong>
+  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-400 
+                  font-medium text-sm md:text-base animate-text-shimmer hover:animate-none">
+    (Check statement to confirm deposit)
+  </span>
+</h2>
+
           {(Array.isArray(newSubAccount?.dsAccount) && newSubAccount.dsAccount.length > 0) || 
-           (Array.isArray(newSubAccount?.sbAccount) && newSubAccount.sbAccount.length > 0) ? (
+           (Array.isArray(newSubAccount?.sbAccount) && newSubAccount.sbAccount.length > 0 ? (
             <ul className="space-y-3">
               {/* DS Accounts */}
               {Array.isArray(newSubAccount?.dsAccount) &&
@@ -265,30 +315,50 @@ const CustomerAccountDashboard = () => {
             <div className="bg-yellow-50 p-4 rounded-lg text-center">
               <p className="text-gray-600">Customer does not have any account.</p>
             </div>
-          )}
+          ))}
         </div>
 
-        {/* Desktop Right Panel */}
-        <div className="hidden md:block bg-white p-4 rounded-lg shadow-sm">
-          <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Transaction History</h2>
-          {selectedAccount ? (
-            <div className="overflow-x-auto">
-              {transactionHistory.length > 0 ? (
-                <table className="w-full">
-                  <Tablehead />
-                  <Tablebody customers={transactionHistory} />
-                </table>
-              ) : (
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
-                  <p className="text-gray-600">No transactions found.</p>
-                </div>
-              )}
+        {/* Right Sidebar */}
+        <div className="space-y-6">
+          {/* Desktop Right Panel - Transactions */}
+          <div className="hidden md:block bg-white p-4 rounded-lg shadow-sm">
+            <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Transaction History</h2>
+            {selectedAccount ? (
+              <div className="overflow-x-auto">
+                {transactionHistory.length > 0 ? (
+                  <table className="w-full">
+                    <Tablehead />
+                    <Tablebody customers={transactionHistory} />
+                  </table>
+                ) : (
+                  <div className="bg-gray-50 p-4 rounded-lg text-center">
+                    <p className="text-gray-600">No transactions found.</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-gray-50 p-4 rounded-lg text-center">
+                <p className="text-gray-600">Select an account to view transactions.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Advertisement Section */}
+          <div className="bg-white p-0 rounded-lg shadow-sm overflow-hidden">
+            <div className="p-3 border-b">
+              <h3 className="font-semibold text-gray-700">Special Offer</h3>
             </div>
-          ) : (
-            <div className="bg-gray-50 p-4 rounded-lg text-center">
-              <p className="text-gray-600">Select an account to view transactions.</p>
+            <div className="aspect-w-16 aspect-h-9">
+              {/* Replace with your actual ad image */}
+              <img 
+                src={advertImage} 
+                alt="Advertisement" 
+                className="w-full h-auto object-cover"
+              />
             </div>
-          )}
+            <div className="p-3 text-center bg-gray-50">
+            </div>
+          </div>
         </div>
       </div>
 

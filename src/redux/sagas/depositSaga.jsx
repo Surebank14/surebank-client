@@ -61,9 +61,19 @@ import { url } from './url'
 
  function* fetchDepositSaga(){
     try {
-        const response = yield call(axios.get, `${url}/api/dsaccount/deposit`)
+        const token = localStorage.getItem('authToken');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = yield call(axios.get, `${url}/api/dsaccount/deposit`,{},config)
         yield put(fetchDepositSuccess(response.data))
     } catch (error) {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         yield put(fetchDepositFailure(error.response.data.message))
     }
 }
@@ -71,9 +81,19 @@ import { url } from './url'
  function* fetchSubAccountDepositSaga(action){
     const {customerId} = action.payload
     try {
-        const response = yield call(axios.get,`${url}/api/dsaccount/${customerId}`);
+        const token = localStorage.getItem('authToken');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = yield call(axios.get,`${url}/api/dsaccount/${customerId}`,{},config);
         yield put(fetchSubAccountDepositSuccess(response.data))
     } catch (error) {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         yield put(fetchSubAccountDepositFailure(error.response.data.message))
     }
 }
@@ -102,7 +122,10 @@ function* createDepositSaga(action) {
       // After deposit, refresh customer account details
       yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
   
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
       const errorMessage = error.response?.data?.message || "An error occurred";
       yield put(createDepositFailure(errorMessage));
     }
@@ -131,7 +154,10 @@ function* createCostPriceSaga(action) {
       // After deposit, refresh customer account details
       yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
   
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
       const errorMessage = error.response?.data?.message || "An error occurred";
       yield put(createCostPriceFailure(errorMessage));
     }
@@ -164,7 +190,10 @@ function* createSBDepositSaga(action) {
       // After deposit, refresh customer account details
       yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
   
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
       const errorMessage = error.response?.data?.message || "An error occurred";
       yield put(createSBDepositFailure(errorMessage));
     }
@@ -182,7 +211,10 @@ function* createSBDepositSaga(action) {
         yield put(createWithdrawalSuccess(response.data))
            yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.message
         yield put(createWithdrawalFailure(errorMessage))
     }
@@ -201,7 +233,10 @@ function* createSBDepositSaga(action) {
 
            yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.message
         yield put(createSBWithdrawalFailure(errorMessage))
     }
@@ -220,7 +255,10 @@ function* createSBDepositSaga(action) {
 
            yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.message
         yield put(createFDWithdrawalFailure(errorMessage))
     }
@@ -239,7 +277,10 @@ function* createSBDepositSaga(action) {
 
            yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.message
         yield put(createSBSellProductFailure(errorMessage))
     }
@@ -258,7 +299,10 @@ function* createSBDepositSaga(action) {
 
            yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.message
         yield put(createFDMaturedWithdrawalFailure(errorMessage))
     }
@@ -272,12 +316,14 @@ function* createSBDepositSaga(action) {
                 Authorization: `Bearer ${token}`
             }
         }
-        console.log("33",details)
         const response = yield call(axios.post,`${url}/api/dsaccount/mainwithdrawal`, details,config);
         yield put(createMainWithdrawalSuccess(response.data))
            yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         console.log("errrror",error)
         const errorMessage = error.response?.data?.message
         yield put(createMainWithdrawalFailure(errorMessage))
@@ -296,7 +342,10 @@ function* createCustomerAccountSaga(action){
         yield put(createCustomerAccountSuccess(response.data))
         yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.error
         yield put(createCustomerAccountFailure(errorMessage))
     }
@@ -314,7 +363,10 @@ function* createCustomerSBAccountSaga(action){
         yield put(createCustomerSBAccountSuccess(response.data))
         yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.error
         yield put(createCustomerSBAccountFailure(errorMessage))
     }
@@ -332,7 +384,10 @@ function* createCustomerFDAccountSaga(action){
         yield put(createCustomerFDAccountSuccess(response.data))
         yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         const errorMessage = error.response?.data?.error
         yield put(createCustomerFDAccountFailure(errorMessage))
     }
@@ -347,11 +402,16 @@ function* editCustomerAccountSaga(action){
             }
         }
         const response = yield call(axios.put,`${url}/api/dsaccount`, details,config);
+
         yield put(editCustomerAccountSuccess(response.data))
         yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
-        yield put(editCustomerAccountFailure(error.message))
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
+        const errorMessage = error.response?.data?.message
+        yield put(editCustomerAccountFailure(errorMessage))
     }
 }
 function* editCustomerSBAccountSaga(action){
@@ -367,7 +427,10 @@ function* editCustomerSBAccountSaga(action){
         yield put(editCustomerSBAccountSuccess(response.data))
         yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         yield put(editCustomerSBAccountFailure(error.message))
     }
 }
@@ -384,7 +447,10 @@ function* editCustomerFDAccountSaga(action){
         yield put(editCustomerFDAccountSuccess(response.data))
         yield call(fetchCustomerAccountSaga, { payload: { customerId: details.customerId } });
         // navigate('/deposit')
-    } catch (error) {
+    } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
         yield put(editCustomerFDAccountFailure(error.message))
     }
 }
@@ -392,13 +458,19 @@ function* editCustomerFDAccountSaga(action){
 function* fetchCustomerAccountSaga(action) {
   const { customerId } = action.payload;
   try {
+    const token = localStorage.getItem('authToken');
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }
     // Fetch all required data in parallel
     const [accountResponse, customerResponse, dsAccountResponse, sbAccountResponse,fdAccountResponse] = yield all([
-      call(axios.post, `${url}/api/account/${customerId}`),
-      call(axios.get, `${url}/api/customer/${customerId}`),
-      call(axios.get, `${url}/api/dsaccount/${customerId}`),
-      call(axios.get, `${url}/api/sbaccount/${customerId}`),
-      call(axios.get, `${url}/api/fdaccount/${customerId}`),
+      call(axios.post, `${url}/api/account/${customerId}`,{},config),
+      call(axios.get, `${url}/api/customer/${customerId}`,config),
+      call(axios.get, `${url}/api/dsaccount/${customerId}`,config),
+      call(axios.get, `${url}/api/sbaccount/${customerId}`,config),
+      call(axios.get, `${url}/api/fdaccount/${customerId}`,config),
     ]);
 
     // Combine dsAccountResponse and sbAccountResponse into one object
@@ -421,7 +493,10 @@ function* fetchCustomerAccountSaga(action) {
       })
     );
 
-  } catch (error) {
+  } catch (error) {  if (error.response && error.response.status === 401) {
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          }
     console.error("Customer Account Fetch Error:", error.message);
     yield put(fetchCustomerAccountFailure(error.message));
   }

@@ -1,5 +1,4 @@
 import React from "react";
-// import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutRequest } from "../redux/slices/loginSlice";
@@ -16,35 +15,21 @@ const Topbar = ({ toggleSidebar }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-gray-900 text-white p-6 shadow-lg z-50">
+    <div className="fixed top-0 left-0 w-full bg-gray-900 text-white p-3 shadow-md z-50">
       <div className="flex items-center justify-between">
-        {/* Sidebar Toggle Button (small screens) */}
-        {/* {token && (
-          <button
-            className="lg:hidden text-white bg-gray-700 p-2 rounded"
-            onClick={toggleSidebar}
-          >
-            ☰
-          </button>
-        )} */}
+        <div className="h-10 w-10">
+          <img src={logo} alt="Sure Bank" className="rounded-md shadow-sm w-full" />
+        </div>
 
-        {/* System Name */}
-        {/* <Link to="/landingpage"> */}
-          <div className="h-16 w-16">
-            <img src={logo} alt="Sure Bank" className="rounded-lg shadow-lg w-full" />
-          </div>
-        {/* </Link> */}
-
-        {/* Login/Logout Buttons (only on larger screens) */}
-        <div className="lg:flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           {token &&
             <button
-              className="bg-red-600 px-4 py-2 rounded hover:bg-red-500"
+              className="bg-red-600 px-3 py-1.5 rounded text-sm hover:bg-red-500 transition-colors"
               onClick={handleLogout}
             >
               Logout
             </button>
-       }
+          }
         </div>
       </div>
     </div>
