@@ -122,7 +122,7 @@ const CustomerAccountDashboard = () => {
     <div className="flex items-center mb-3 md:mb-0">
       <FontAwesomeIcon icon={faLandmark} className="text-2xl mr-3" />
       <div>
-        <h2 className="text-2xl font-bold">Comertial Bank Details</h2>
+        <h2 className="text-sm font-bold">Pay to this account, send us receipt on Whatsapp, we will credit your account with us.</h2>
       </div>
     </div>
   
