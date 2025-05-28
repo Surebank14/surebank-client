@@ -60,11 +60,11 @@ const CustomerAccountDashboard = () => {
     },
     SB: {
       title: "Savings (SB) Account",
-      description: "The Savings account is your main account for regular transactions and savings. Is for you to save towards buying an item and serves as your primary banking relationship.",
+      description: "The Savings account is your main account for savings and purchasing of item. Is for you to save towards buying an item and serves as your primary banking purchasing account.",
       features: [
         "Save to buy an item",
-        "Unlimited deposits and withdrawals",
-        "Primary account for transactions"
+        "Unlimited deposits",
+        "Primary account for purchasing an item"
       ]
     },
     FD: {
