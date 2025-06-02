@@ -60,7 +60,7 @@ const CustomerAccountDashboard = () => {
     },
     SB: {
       title: "Savings (SB) Account",
-      description: "The Savings account is your main account for savings and purchasing of item. Is for you to save towards buying an item and serves as your primary banking purchasing account.",
+      description: "The Savings account is your main account for savings and purchasing of item. Is for you to save towards buying an item and serves as your primary purchasing account.",
       features: [
         "Save to buy an item",
         "Unlimited deposits",
@@ -72,7 +72,7 @@ const CustomerAccountDashboard = () => {
       description: "Fixed Deposit accounts allow you to earn higher interest by locking in your funds for a specific period. Your money grows while you wait for maturity.",
       features: [
         "Higher interest rates than regular savings",
-        "Fixed tenure (30 days to 5 years)",
+        "Fixed tenure (6 months to 5 years)",
         "Interest paid before maturity",
         "Premature withdrawal penalties may apply"
       ]
@@ -122,7 +122,7 @@ const CustomerAccountDashboard = () => {
     <div className="flex items-center mb-3 md:mb-0">
       <FontAwesomeIcon icon={faLandmark} className="text-2xl mr-3" />
       <div>
-        <h2 className="text-sm font-bold">Pay to this account, send us receipt on Whatsapp, we will credit your account with us.</h2>
+        <h2 className="text-sm font-bold">PAY TO THIS ACCOUNT, SEND US RECIEPT ON WHATSAPP, WE WILL CREDIT YOUR ACCOUNT WITH US.</h2>
       </div>
     </div>
   
@@ -195,7 +195,8 @@ const CustomerAccountDashboard = () => {
 </h2>
 
           {(Array.isArray(newSubAccount?.dsAccount) && newSubAccount.dsAccount.length > 0) || 
-           (Array.isArray(newSubAccount?.sbAccount) && newSubAccount.sbAccount.length > 0 ? (
+          (Array.isArray(newSubAccount?.fdAccount) && newSubAccount.fdAccount.length > 0) || 
+           (Array.isArray(newSubAccount?.sbAccount) && newSubAccount.sbAccount.length > 0) ? (
             <ul className="space-y-3">
               {/* DS Accounts */}
               {Array.isArray(newSubAccount?.dsAccount) &&
@@ -315,7 +316,7 @@ const CustomerAccountDashboard = () => {
             <div className="bg-yellow-50 p-4 rounded-lg text-center">
               <p className="text-gray-600">Customer does not have any account.</p>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Right Sidebar */}
