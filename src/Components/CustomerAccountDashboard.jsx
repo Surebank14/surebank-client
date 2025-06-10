@@ -219,7 +219,7 @@ const CustomerAccountDashboard = () => {
                       >
                         {account.accountType} Account <strong>₦{account.amountPerDay}</strong>
                       </div>
-                      <p className="text-sm text-gray-600">Number: {account.DSAccountNumber || "N/A"}</p>
+                      <p className="text-sm text-gray-600"><span className="bg-blue-500 text-white w-8 h-8 rounded-sm"> DS:</span> {account.DSAccountNumber || "N/A"}</p>
                       <p className="text-sm text-gray-600">Balance: ₦{account.totalContribution || 0}</p>
                     </div>
                     <button 
@@ -252,8 +252,8 @@ const CustomerAccountDashboard = () => {
                       >
                         FD Account <strong>₦{account.fdamount}</strong>
                       </div>
-                      <p className="text-sm text-gray-600">Number: {account.FDAccountNumber || "N/A"}</p>
-                      <p className="text-sm text-gray-600">Balance: ₦{account.totalAmount || 0}</p>
+                      <p className="text-sm text-gray-600"><span className="bg-purple-500 text-white w-8 h-8 rounded-sm"> FD:</span>  {account.FDAccountNumber || "N/A"}</p>
+                      <p className="text-sm text-gray-600">Interest: ₦{account.expenseInterest || 0}</p>
                     </div>
                     <button 
                       onClick={() => accountTransaction(account._id)} 
@@ -299,7 +299,7 @@ const CustomerAccountDashboard = () => {
                         </div>
                       </div>
 
-                      <p className="text-xs text-gray-600 mt-2">Number: {account.SBAccountNumber || "N/A"}</p>
+                      <p className="text-xs text-gray-600 mt-2"><span className="bg-green-500 text-white w-8 h-8 rounded-sm"> SB:</span> {account.SBAccountNumber || "N/A"}</p>
                       <p className="text-xs text-gray-600">Balance: ₦{account.balance || 0}</p>
                     </div>
 

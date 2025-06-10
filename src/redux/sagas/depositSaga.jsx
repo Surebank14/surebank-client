@@ -482,7 +482,7 @@ function* fetchCustomerAccountSaga(action) {
 
     // Store customer ID and name in local storage
     localStorage.setItem("customerId", customerId);
-    localStorage.setItem("customerName", customerResponse.data?.name);
+    localStorage.setItem("customerName", `${customerResponse.data?.firstName} ${customerResponse.data?.lastName}`);
 
     // Dispatch success action with all fetched data
     yield put(
