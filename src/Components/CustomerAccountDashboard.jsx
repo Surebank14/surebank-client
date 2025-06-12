@@ -226,7 +226,7 @@ const CustomerAccountDashboard = () => {
                       onClick={() => accountTransaction(account._id)} 
                       className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
                     >
-                      <FontAwesomeIcon icon={faFolderOpen} title="View Transactions"/>
+                      <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
                     </button>
                   </li>
                 ))}
@@ -259,7 +259,7 @@ const CustomerAccountDashboard = () => {
                       onClick={() => accountTransaction(account._id)} 
                       className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
                     >
-                      <FontAwesomeIcon icon={faFolderOpen} title="View Transactions"/>
+                      <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
                     </button>
                   </li>
                 ))}
@@ -290,7 +290,7 @@ const CustomerAccountDashboard = () => {
                         <div className="flex items-center space-x-2 mt-1 md:mt-0">
                           <div className="relative group">
                             <button className="text-gray-600 hover:text-gray-800">
-                              <FontAwesomeIcon icon={faCircleInfo} title="Product description"/>
+                              <FontAwesomeIcon className="text-lg md:text-lg" icon={faCircleInfo} title="Product description"/>
                             </button>
                             <div className="absolute left-14 transform -translate-x-1/2 bottom-full mb-2 w-48 bg-green-700 text-white text-xs p-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                               {account.productDescription || "No description available"}
