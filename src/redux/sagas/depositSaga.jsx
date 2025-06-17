@@ -72,7 +72,7 @@ import { url } from './url'
     } catch (error) {
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         yield put(fetchDepositFailure(error.response.data.message))
     }
@@ -92,7 +92,7 @@ import { url } from './url'
     } catch (error) {
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         yield put(fetchSubAccountDepositFailure(error.response.data.message))
     }
@@ -124,7 +124,7 @@ function* createDepositSaga(action) {
   
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
       const errorMessage = error.response?.data?.message || "An error occurred";
       yield put(createDepositFailure(errorMessage));
@@ -156,7 +156,7 @@ function* createCostPriceSaga(action) {
   
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
       const errorMessage = error.response?.data?.message || "An error occurred";
       yield put(createCostPriceFailure(errorMessage));
@@ -192,7 +192,7 @@ function* createSBDepositSaga(action) {
   
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
       const errorMessage = error.response?.data?.message || "An error occurred";
       yield put(createSBDepositFailure(errorMessage));
@@ -213,7 +213,7 @@ function* createSBDepositSaga(action) {
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.message
         yield put(createWithdrawalFailure(errorMessage))
@@ -235,7 +235,7 @@ function* createSBDepositSaga(action) {
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.message
         yield put(createSBWithdrawalFailure(errorMessage))
@@ -257,7 +257,7 @@ function* createSBDepositSaga(action) {
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.message
         yield put(createFDWithdrawalFailure(errorMessage))
@@ -279,7 +279,7 @@ function* createSBDepositSaga(action) {
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.message
         yield put(createSBSellProductFailure(errorMessage))
@@ -301,7 +301,7 @@ function* createSBDepositSaga(action) {
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.message
         yield put(createFDMaturedWithdrawalFailure(errorMessage))
@@ -322,7 +322,7 @@ function* createSBDepositSaga(action) {
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         console.log("errrror",error)
         const errorMessage = error.response?.data?.message
@@ -344,7 +344,7 @@ function* createCustomerAccountSaga(action){
         navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.error
         yield put(createCustomerAccountFailure(errorMessage))
@@ -365,7 +365,7 @@ function* createCustomerSBAccountSaga(action){
         navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.error
         yield put(createCustomerSBAccountFailure(errorMessage))
@@ -386,7 +386,7 @@ function* createCustomerFDAccountSaga(action){
         navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.error
         yield put(createCustomerFDAccountFailure(errorMessage))
@@ -408,7 +408,7 @@ function* editCustomerAccountSaga(action){
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         const errorMessage = error.response?.data?.message
         yield put(editCustomerAccountFailure(errorMessage))
@@ -429,7 +429,7 @@ function* editCustomerSBAccountSaga(action){
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         yield put(editCustomerSBAccountFailure(error.message))
     }
@@ -449,7 +449,7 @@ function* editCustomerFDAccountSaga(action){
         // navigate('/deposit')
     } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         yield put(editCustomerFDAccountFailure(error.message))
     }
@@ -495,7 +495,7 @@ function* fetchCustomerAccountSaga(action) {
 
   } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
     console.error("Customer Account Fetch Error:", error.message);
     yield put(fetchCustomerAccountFailure(error.message));

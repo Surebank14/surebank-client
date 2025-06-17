@@ -23,7 +23,7 @@ import { url } from './url'
     } catch (error) {
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         yield put(fetchAllCustomerAccountFailure(error.response.data.message))
     }
@@ -44,7 +44,7 @@ import { url } from './url'
     } catch (error) {
         if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            window.location.href = '/login';
+            window.location.href = '/';
           }
         yield put(fetchAccountTransactionFailure(error.response.data.message))
     }
