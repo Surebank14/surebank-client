@@ -93,7 +93,7 @@ const CustomerAccountDashboard = () => {
           {/* <p><strong>Total Balance:</strong> ₦{deposit?.account?.ledgerBalance}</p> */}
           <div className="flex items-center gap-3 flex-wrap">
             <span>
-              <strong>Free to withdraw:</strong> ₦{deposit?.account?.availableBalance}
+              <strong>Free to withdraw:</strong> ₦{deposit?.account?.availableBalance?.toLocaleString('en-US')}
             </span>
             <button
               onClick={() => accountTransaction(deposit?.account?._id)}
@@ -217,10 +217,10 @@ const CustomerAccountDashboard = () => {
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {account.accountType} Account <strong>₦{account.amountPerDay}</strong>
+                        {account.accountType} Account <strong>₦{account.amountPerDay?.toLocaleString('en-US')}</strong>
                       </div>
                       <p className="text-sm text-gray-600"><span className="bg-blue-500 text-white w-8 h-8 rounded-sm"> DS:</span> {account.DSAccountNumber || "N/A"}</p>
-                      <p className="text-sm text-gray-600">Balance: ₦{account.totalContribution || 0}</p>
+                      <p className="text-sm text-gray-600">Balance: ₦{account.totalContribution?.toLocaleString('en-US') || 0}</p>
                     </div>
                     <button 
                       onClick={() => accountTransaction(account._id)} 
@@ -250,10 +250,10 @@ const CustomerAccountDashboard = () => {
                             : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        FD Account <strong>₦{account.fdamount}</strong>
+                        FD Account <strong>₦{account.fdamount?.toLocaleString('en-US')}</strong>
                       </div>
                       <p className="text-sm text-gray-600"><span className="bg-purple-500 text-white w-8 h-8 rounded-sm"> FD:</span>  {account.FDAccountNumber || "N/A"}</p>
-                      <p className="text-sm text-gray-600">Interest: ₦{account.expenseInterest || 0}</p>
+                      <p className="text-sm text-gray-600">Interest: ₦{account.expenseInterest?.toLocaleString('en-US') || 0}</p>
                     </div>
                     <button 
                       onClick={() => accountTransaction(account._id)} 
@@ -284,7 +284,7 @@ const CustomerAccountDashboard = () => {
                               : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {account.productName} <strong>₦{account.sellingPrice}</strong>
+                          {account.productName} <strong>₦{account.sellingPrice?.toLocaleString('en-US')}</strong>
                         </span>
 
                         <div className="flex items-center space-x-2 mt-1 md:mt-0">
@@ -300,7 +300,7 @@ const CustomerAccountDashboard = () => {
                       </div>
 
                       <p className="text-xs text-gray-600 mt-2"><span className="bg-green-500 text-white w-8 h-8 rounded-sm"> SB:</span> {account.SBAccountNumber || "N/A"}</p>
-                      <p className="text-xs text-gray-600">Balance: ₦{account.balance || 0}</p>
+                      <p className="text-xs text-gray-600">Balance: ₦{account.balance?.toLocaleString('en-US') || 0}</p>
                     </div>
 
                     <button 

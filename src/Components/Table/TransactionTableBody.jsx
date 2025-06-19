@@ -27,7 +27,7 @@ const Tablebody = ({ customers = [] }) => { // Default values for props
             </td>            
             <td>
             <p className={`text-xs font-semibold ${customer.direction === 'Credit' ?  "text-green-600" :customer.direction ==='Transfer'? "text-green-600" :customer.direction === 'Moved' ? "text-purple-500" :  "text-red-600"}`}>
-            {customer.direction === 'Credit' ? "+" :customer.direction === 'Transfer'?  "+": "-"} {customer.amount}
+            {customer.direction === 'Credit' ? "+" :customer.direction === 'Transfer'?  "+": "-"} {customer.amount?.toLocaleString('en-US')}
             </p>
             </td>
             <td>
@@ -77,7 +77,7 @@ const Tablebody = ({ customers = [] }) => { // Default values for props
 </p>
 </td>
 
-            <td ><p className={`ml-2 ${customer.direction === 'Credit' ?  "text-green-600" :customer.direction ==='Transfer'? "text-green-600" :customer.direction === 'Moved' ? "text-purple-500" :  "text-red-600"}`}>{customer.balance}</p></td>
+            <td ><p className={`ml-2 ${customer.direction === 'Credit' ?  "text-green-600" :customer.direction ==='Transfer'? "text-green-600" :customer.direction === 'Moved' ? "text-purple-500" :  "text-red-600"}`}>{customer.balance?.toLocaleString('en-US')}</p></td>
             {/* <td >
               <p className={`${customer.direction === 'Credit' ?  "text-green-600" :customer.direction === 'Moved' ? "text-purple-500" :  "text-red-600"}`}>{getBranchName(customer.createdBy, branches)}</p>
             </td> */}
