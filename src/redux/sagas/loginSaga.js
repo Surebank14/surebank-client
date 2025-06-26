@@ -63,7 +63,7 @@ function* updatePasswordSaga(action){
             localStorage.removeItem('authToken');
             window.location.href = '/';
           }
-        yield put(updatePasswordFailure(error.message))
+        yield put(updatePasswordFailure(error.response.data.message))
     }
 }
 
