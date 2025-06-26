@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginRequest } from '../redux/slices/loginSlice';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const dispatch = useDispatch();
@@ -46,7 +47,14 @@ const Login = () => {
                         onChange={handleChange}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-
+                           <div className="text-right">
+                            <Link 
+                                to="/forgotpassword" 
+                                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                            >
+                                Forgot Password?
+                            </Link>
+                        </div>
                     {/* Error Message */}
                     {error && <p className="text-red-500 text-sm">{error}</p>}
 

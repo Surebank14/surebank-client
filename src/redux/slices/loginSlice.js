@@ -2,6 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
     staff:null,
+    customers:null,
     token:null,
     error:null,
     loading:false
@@ -33,6 +34,16 @@ const loginSlice = createSlice({
         },
         logoutFailure:(state,action)=>{
             state.error = action.payload
+        },
+        updatePasswordRequest:(state)=>{
+            state.loading = true
+        },
+       updatePasswordSuccess:(state,action)=>{
+            state.customers= action.payload;
+            state.loading=false
+        },
+       updatePasswordFailure:(state,action)=>{
+            state.error = action.payload
         }
     }
 })
@@ -43,7 +54,10 @@ export const {
     loginFailure,
     logoutRequest,
     logoutSuccess,
-    logoutFailure
+    logoutFailure,
+    updatePasswordRequest,
+    updatePasswordSuccess,
+    updatePasswordFailure
 } = loginSlice.actions
 
 export default loginSlice.reducer
