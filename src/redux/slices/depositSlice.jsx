@@ -70,16 +70,26 @@ const depositSlice = createSlice({
         fetchSubAccountDepositFailure:(state,action)=>{
             state.error = action.payload
         },
-        createDepositRequest:(state)=>{
+        createCustomerWithdrawalRequestRequest:(state)=>{
             state.loading=true
         },
-        createDepositSuccess:(state,action)=>{
+        createCustomerWithdrawalRequestSuccess:(state,action)=>{
             state.deposit = action.payload
             state.loading=false
         },
-        createDepositFailure:(state,action)=>{
+        createCustomerWithdrawalRequestFailure:(state,action)=>{
             state.error=action.payload
             state.loading=false
+        },
+        fetchCustomerWithdrawalRequestRequest:(state)=>{
+            state.loading = true
+        },
+        fetchCustomerWithdrawalRequestSuccess:(state,action)=>{
+            state.deposit= action.payload;
+            state.loading=false
+        },
+        fetchCustomerWithdrawalRequestFailure:(state,action)=>{
+            state.error = action.payload
         },
         createSBDepositRequest:(state)=>{
             state.loading=true
@@ -260,9 +270,12 @@ export const {
     fetchSubAccountDepositRequest,
     fetchSubAccountDepositSuccess,
     fetchSubAccountDepositFailure,
-    createDepositRequest,
-    createDepositSuccess,
-    createDepositFailure,
+    createCustomerWithdrawalRequestRequest,
+    createCustomerWithdrawalRequestSuccess,
+    createCustomerWithdrawalRequestFailure,
+    fetchCustomerWithdrawalRequestRequest,
+    fetchCustomerWithdrawalRequestSuccess,
+    fetchCustomerWithdrawalRequestFailure,
     createSBDepositRequest,
     createSBDepositSuccess,
     createSBDepositFailure,

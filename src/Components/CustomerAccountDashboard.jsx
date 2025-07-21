@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAccountTransactionRequest } from "../redux/slices/createAccountSlice";
-import { fetchCustomerAccountRequest } from '../redux/slices/depositSlice';
+import { fetchCustomerAccountRequest,createCustomerWithdrawalRequestRequest,fetchCustomerWithdrawalRequestRequest } from '../redux/slices/depositSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faCircleInfo, faTimes, faLandmark } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen,faMoneyBillTransfer,  faCircleInfo, faTimes, faLandmark, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from 'react-icons/fa';
 import Loader from "./Loader";
 import Tablebody from "./Table/TransactionTableBody";
@@ -18,15 +18,68 @@ const CustomerAccountDashboard = () => {
   const { customerAccount } = useSelector((state) => state.customerAccount);
   const { loading, deposit } = useSelector((state) => state.deposit);
   const newSubAccount = deposit?.subAccount;
-  
+  const withdrawalRequest = deposit?.withdrawalRequest;
+  console.log('>>>>>>???',newSubAccount)
+  console.log('status',deposit)
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [showMobileModal, setShowMobileModal] = useState(false);
+  const [showCustomerWithdrawalRequestModal, setShowCustomerWithdrawalRequestModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [currentAccountType, setCurrentAccountType] = useState('');
+  const [amount, setAmount] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [bankAccountNumber, setBankAccountNumber] = useState("");
+  const [withdrawalType, setWithdrawalType] = useState("cash");
+  const [accountName, setAccountName] = useState("");
+  const [packageType, setPackageType] = useState()
+  const [errors, setErrors] = useState("");
+
+  const handleCustomerWithdrawalRequest = (e) => {
+    e.preventDefault();
+    console.log('LLLLL',selectedAccount)
+    setErrors("");
+
+    if (!amount) {
+      setErrors("Amount fields is required.");
+      return;
+    }
+
+    if (isNaN(amount) || parseFloat(amount) <= 0) {
+      setErrors("Please enter a valid amount.");
+      return;
+    }
+
+    const details = { 
+      accountNumber: selectedAccount.accountNumber,
+      accountManagerId:selectedAccount.accountManagerId,
+      branchId:selectedAccount.branchId,
+      accountTypeId:selectedAccount._id,
+      customerId:customerId, 
+      bankName,
+      bankAccountNumber,
+      accountName,
+      package:packageType,
+      channelOfWithdrawal:withdrawalType,
+      amount: parseFloat(amount) 
+    };
+    const data = {details}
+    console.log('data',data)
+    dispatch(createCustomerWithdrawalRequestRequest(data));
+    setAmount("");
+    setBankName("");
+    setBankAccountNumber("");
+    setAccountName("");
+    setWithdrawalType("");
+    setShowCustomerWithdrawalRequestModal(false);
+  };
 
   useEffect(() => {
     const data = { customerId: customerId };
     dispatch(fetchCustomerAccountRequest(data));
+  }, [dispatch, customerId]);
+  useEffect(() => {
+    const data = { customerId: customerId };
+    dispatch(fetchCustomerWithdrawalRequestRequest(data));
   }, [dispatch, customerId]);
 
   const customerName = localStorage.getItem("customerName");
@@ -41,6 +94,7 @@ const CustomerAccountDashboard = () => {
   };
   
   const transactionHistory = Array.isArray(customerAccount) ? customerAccount : [];
+
 
   const handleAccountTypeClick = (type) => {
     setCurrentAccountType(type);
@@ -200,40 +254,107 @@ const CustomerAccountDashboard = () => {
             <ul className="space-y-3">
               {/* DS Accounts */}
               {Array.isArray(newSubAccount?.dsAccount) &&
-                newSubAccount.dsAccount.map((account, index) => (
-                  <li
-                    key={`ds-${index}`}
-                    className="flex justify-between items-center bg-blue-50 p-3 rounded-lg hover:shadow-md transition-shadow"
-                  >
-                    <div>
-                      <div
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-2 ${
-                          account.accountType === "Rent"
-                            ? "bg-blue-100 text-blue-800"
-                            : account.accountType === "School fees"
-                            ? "bg-green-100 text-green-800"
-                            : account.accountType === "Food"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {account.accountType} Account <strong>₦{account.amountPerDay?.toLocaleString('en-US')}</strong>
-                      </div>
-                      <p className="text-sm text-gray-600"><span className="bg-blue-500 text-white w-8 h-8 rounded-sm"> DS:</span> {account.DSAccountNumber || "N/A"}</p>
-                      <p className="text-sm text-gray-600">Balance: ₦{account.totalContribution?.toLocaleString('en-US') || 0}</p>
-                    </div>
-                    <button 
-                      onClick={() => accountTransaction(account._id)} 
-                      className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
-                    >
-                      <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
-                    </button>
-                  </li>
-                ))}
+  newSubAccount.dsAccount.map((account, index) => {
+    // Find matching withdrawal request for this account
+    const matchingRequest = Array.isArray(withdrawalRequest)
+    ? withdrawalRequest.find(request => request.accountTypeId === account._id)
+    : null;
+
+    return (
+      <li
+        key={`ds-${account._id}`} // Using account._id for better key
+        className="flex justify-between items-center bg-blue-50 p-3 rounded-lg hover:shadow-md transition-shadow"
+      >
+        <div>
+          <div className="flex">
+          <div
+            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-2 ${
+              account.accountType === "Rent"
+                ? "bg-blue-100 text-blue-800"
+                : account.accountType === "School fees"
+                ? "bg-green-100 text-green-800"
+                : account.accountType === "Food"
+                ? "bg-purple-100 text-purple-800"
+                : "bg-gray-100 text-gray-800"
+            }`}
+          >
+       
+            {/* {console.log('::::::',matchingRequest.status)} */}
+            {account.accountType} Account <strong>₦{account.amountPerDay?.toLocaleString('en-US')}</strong>
+            
+          </div>
+          <div className="ml-4">
+      
+            </div>
+            </div>
+          <p className="text-sm text-gray-600">
+            <span className="bg-blue-500 text-white w-8 h-8 rounded-sm"> DS:</span> 
+            {account.DSAccountNumber || "N/A"}
+          </p>
+          <p className="text-sm text-gray-600">
+            Balance: ₦{account.totalContribution?.toLocaleString('en-US') || 0}
+          </p>
+        </div>
+        <div>
+          <div>
+          {matchingRequest?.status && (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      matchingRequest?.status.toLowerCase() === 'pending' 
+        ? 'bg-yellow-100 text-yellow-800' 
+      : matchingRequest?.status.toLowerCase() === 'processing' 
+        ? 'bg-blue-100 text-blue-800'
+      : matchingRequest?.status.toLowerCase() === 'completed' 
+        ? 'bg-green-100 text-green-800'
+      : 'bg-gray-100 text-gray-800'
+    }`}>
+      <span className="mr-1">Withdrawal:</span>
+      <span className="font-semibold">
+        {matchingRequest?.status}
+      </span>
+    </span>
+  )}
+          </div>
+        <div className="flex space-x-4">
+          
+          <button 
+            onClick={() => { 
+              setSelectedAccount(account); 
+              setPackageType('DS'); 
+              setShowCustomerWithdrawalRequestModal(true); 
+            }} 
+            className="text-red-600 hover:text-red-800"
+          >
+            <FontAwesomeIcon 
+              icon={faMoneyBillTransfer} 
+              className="text-lg md:text-lg text-red-500" 
+              title="Withdrawal"
+            />
+          </button>
+          <button 
+            onClick={() => accountTransaction(account._id)} 
+            className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
+          >
+            <FontAwesomeIcon 
+              className="text-lg md:text-lg" 
+              icon={faFolderOpen} 
+              title="View Transactions"
+            />
+          </button>
+        </div>
+        </div>
+      </li>
+    );
+  })}
               
               {/* FD Accounts */}
               {Array.isArray(newSubAccount?.fdAccount) &&
-                newSubAccount.fdAccount.map((account, index) => (
+                newSubAccount.fdAccount.map((account, index) => {
+                      // Find matching withdrawal request for this account
+                      const matchingRequest = Array.isArray(withdrawalRequest)
+                      ? withdrawalRequest.find(request => request.accountTypeId === account._id)
+                      : null;
+
+    return (
                   <li
                     key={`fd-${index}`}
                     className="flex justify-between items-center bg-green-50 p-3 rounded-lg hover:shadow-md transition-shadow"
@@ -255,18 +376,52 @@ const CustomerAccountDashboard = () => {
                       <p className="text-sm text-gray-600"><span className="bg-purple-500 text-white w-8 h-8 rounded-sm"> FD:</span>  {account.FDAccountNumber || "N/A"}</p>
                       <p className="text-sm text-gray-600">Interest: ₦{account.expenseInterest?.toLocaleString('en-US') || 0}</p>
                     </div>
+                    <div>
+          <div>
+          {matchingRequest?.status && (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      matchingRequest?.status.toLowerCase() === 'pending' 
+        ? 'bg-yellow-100 text-yellow-800' 
+      : matchingRequest?.status.toLowerCase() === 'processing' 
+        ? 'bg-blue-100 text-blue-800'
+      : matchingRequest?.status.toLowerCase() === 'completed' 
+        ? 'bg-green-100 text-green-800'
+      : 'bg-gray-100 text-gray-800'
+    }`}>
+      <span className="mr-1">Withdrawal:</span>
+      <span className="font-semibold">
+        {matchingRequest?.status}
+      </span>
+    </span>
+  )}
+          </div>
+                    <div className="flex space-x-4">
+                    <button 
+                    onClick={() => { setSelectedAccount(account); setPackageType('FD'); setShowCustomerWithdrawalRequestModal(true); }} className="text-red-600 hover:text-red-800"
+                    >
+              <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg md:text-lg text-red-500" title="Withdrawal"/>
+             </button>
                     <button 
                       onClick={() => accountTransaction(account._id)} 
                       className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
                     >
                       <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
                     </button>
+                    </div>
+                    </div>
                   </li>
-                ))}
+    )
+})}
 
               {/* SB Accounts */}
               {Array.isArray(newSubAccount?.sbAccount) &&
-                newSubAccount.sbAccount.map((account, index) => (
+                newSubAccount.sbAccount.map((account, index) => {
+                    // Find matching withdrawal request for this account
+                    const matchingRequest = Array.isArray(withdrawalRequest)
+                    ? withdrawalRequest.find(request => request.accountTypeId === account._id)
+                    : null;
+
+  return (
                   <li
                     key={`sb-${index}`}
                     className="flex justify-between items-center bg-purple-50 p-3 rounded-lg hover:shadow-md transition-shadow relative"
@@ -302,15 +457,42 @@ const CustomerAccountDashboard = () => {
                       <p className="text-xs text-gray-600 mt-2"><span className="bg-green-500 text-white w-8 h-8 rounded-sm"> SB:</span> {account.SBAccountNumber || "N/A"}</p>
                       <p className="text-xs text-gray-600">Balance: ₦{account.balance?.toLocaleString('en-US') || 0}</p>
                     </div>
-
+                    <div>
+                    <div>
+  {matchingRequest?.status && (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+      matchingRequest?.status.toLowerCase() === 'pending' 
+        ? 'bg-yellow-100 text-yellow-800' 
+      : matchingRequest?.status.toLowerCase() === 'processing' 
+        ? 'bg-blue-100 text-blue-800'
+      : matchingRequest?.status.toLowerCase() === 'completed' 
+        ? 'bg-green-100 text-green-800'
+      : 'bg-gray-100 text-gray-800'
+    }`}>
+      <span className="mr-1">Withdrawal:</span>
+      <span className="font-semibold">
+        {matchingRequest?.status}
+      </span>
+    </span>
+  )}
+</div>
+                    <div className="flex space-x-4">
+                    <button 
+                    onClick={() => { setSelectedAccount(account); setPackageType('SB'); setShowCustomerWithdrawalRequestModal(true); }} className="text-red-600 hover:text-red-800"
+                    >
+              <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg md:text-lg text-red-500" title="Withdrawal"/>
+             </button>
                     <button 
                       onClick={() => accountTransaction(account._id)} 
                       className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
                     >
                       <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
                     </button>
+                    </div>
+                    </div>
                   </li>
-                ))}
+  )
+})}
             </ul>
           ) : (
             <div className="bg-yellow-50 p-4 rounded-lg text-center">
@@ -433,6 +615,119 @@ const CustomerAccountDashboard = () => {
           </div>
         </div>
       )}
+
+{showCustomerWithdrawalRequestModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
+      <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+        <FontAwesomeIcon icon={faMoneyBillWave} className="text-green-600" />
+        Withdrawal Request
+      </h3>
+      
+      {errors && <p className="text-red-600 mb-4 text-sm">{errors}</p>}
+      
+      <form onSubmit={handleCustomerWithdrawalRequest}>
+        {/* Withdrawal Type Selection */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Withdrawal Method</label>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setWithdrawalType('cash')}
+              className={`px-4 py-2 rounded-md flex-1 ${
+                withdrawalType === 'cash' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              Cash
+            </button>
+            <button
+              type="button"
+              onClick={() => setWithdrawalType('transfer')}
+              className={`px-4 py-2 rounded-md flex-1 ${
+                withdrawalType === 'transfer' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              Bank Transfer
+            </button>
+          </div>
+        </div>
+
+        {/* Amount Field (Always visible) */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Amount</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount"
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+
+        {/* Bank Details (Only for transfer) */}
+        {withdrawalType === 'transfer' && (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Bank Name</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                placeholder="Enter bank name"
+                className="w-full border border-gray-300 rounded-md p-2"
+                required={withdrawalType === 'transfer'}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Account Name</label>
+              <input
+                type="text"
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
+                placeholder="Enter account name"
+                className="w-full border border-gray-300 rounded-md p-2"
+                required={withdrawalType === 'transfer'}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Account Number</label>
+              <input
+                type="text"
+                value={bankAccountNumber}
+                onChange={(e) => setBankAccountNumber(e.target.value)}
+                placeholder="Enter account number"
+                className="w-full border border-gray-300 rounded-md p-2"
+                required={withdrawalType === 'transfer'}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => setShowCustomerWithdrawalRequestModal(false)}
+            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
+            {withdrawalType === 'cash' ? 'Request Cash' : 'Request Transfer'}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
     </div>
   );
 };

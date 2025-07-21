@@ -12,6 +12,7 @@ import {
     updatePasswordFailure
 } from '../slices/loginSlice';
 import { url } from './url';
+
 function* loginSaga(action){
     const {credentials,navigate} = action.payload
     try {
@@ -19,9 +20,8 @@ function* loginSaga(action){
         const { token,customer } = response.data;
         localStorage.setItem('authToken', token);
         localStorage.setItem('customerId', customer.id);
-        localStorage.setItem('customerEmail', customer.email);
-        localStorage.setItem('customerRole', customer.role);
-        localStorage.setItem('customerBranch', customer.branch);
+        localStorage.setItem('customerPhone', customer.phone);
+        localStorage.setItem('branchId', customer.branchId);
         yield put(loginSuccess(response.data))
         navigate(`/customeraccountdashboard/${customer.id}`)
     } catch (error) {
@@ -34,9 +34,7 @@ function* logoutSaga(action){
         // Clear user data from local storage
         localStorage.removeItem('authToken');
         localStorage.removeItem('staffId');
-        localStorage.removeItem('staffEmail');
-        localStorage.removeItem('staffRole');
-        localStorage.removeItem('staffBranch');
+        localStorage.removeItem('staffPhone');
         navigate('/');
 
         // Dispatch logout success action

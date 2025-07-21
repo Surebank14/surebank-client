@@ -38,7 +38,7 @@ import { url } from './url'
     },
   };
     try {
-        const response = yield call(axios.get, `${url}/api/customertransaction/${accountTypeId}`,config)
+        const response = yield call(axios.get, `${url}/api/customertransaction/customer/${accountTypeId}`,config)
         console.log("transaction",response)
         yield put(fetchAccountTransactionSuccess(response.data))
     } catch (error) {
