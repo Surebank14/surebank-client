@@ -15,7 +15,7 @@ const Topbar = ({ toggleSidebar }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-gray-900 text-white p-3 shadow-md z-50">
+    <div className="fixed top-0 left-0 w-full bg-white text-white px-10 py-1 z-50">
       <div className="flex items-center justify-between">
         <div className="h-10 w-10">
           <img src={logo} alt="Sure Bank" className="rounded-md shadow-sm w-full" />

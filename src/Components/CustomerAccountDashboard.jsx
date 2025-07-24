@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAccountTransactionRequest } from "../redux/slices/createAccountSlice";
 import { fetchCustomerAccountRequest,createCustomerWithdrawalRequestRequest,fetchCustomerWithdrawalRequestRequest } from '../redux/slices/depositSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen,faMoneyBillTransfer,  faCircleInfo, faTimes, faLandmark, faMoneyBillWave } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen,faMoneyBillTransfer,  faCircleInfo, faTimes, faLandmark, faMoneyBillWave,faCircleCheck,faHistory } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from 'react-icons/fa';
 import Loader from "./Loader";
 import Tablebody from "./Table/TransactionTableBody";
@@ -18,59 +18,90 @@ const CustomerAccountDashboard = () => {
   const { customerAccount } = useSelector((state) => state.customerAccount);
   const { loading, deposit } = useSelector((state) => state.deposit);
   const newSubAccount = deposit?.subAccount;
-  const withdrawalRequest = deposit?.withdrawalRequest;
+  // const withdrawalRequest = deposit?.withdrawalRequest;
   console.log('>>>>>>???',newSubAccount)
   console.log('status',deposit)
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [showMobileModal, setShowMobileModal] = useState(false);
-  const [showCustomerWithdrawalRequestModal, setShowCustomerWithdrawalRequestModal] = useState(false);
+  const [showDSCustomerWithdrawalRequestModal, setShowDSCustomerWithdrawalRequestModal] = useState(false);
+  const [showSBCustomerWithdrawalRequestModal, setShowSBCustomerWithdrawalRequestModal] = useState(false);
+  const [showFDCustomerWithdrawalRequestModal, setShowFDCustomerWithdrawalRequestModal] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [currentAccountType, setCurrentAccountType] = useState('');
   const [amount, setAmount] = useState("");
   const [bankName, setBankName] = useState("");
   const [bankAccountNumber, setBankAccountNumber] = useState("");
+  const [packageNumber, setPackageNumber] = useState("");
   const [withdrawalType, setWithdrawalType] = useState("cash");
   const [accountName, setAccountName] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [productName, setProductName] = useState("");
   const [packageType, setPackageType] = useState()
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errors, setErrors] = useState("");
 
-  const handleCustomerWithdrawalRequest = (e) => {
-    e.preventDefault();
-    console.log('LLLLL',selectedAccount)
+  const handleCustomerWithdrawalRequest = (submissionData) => {
+    // Handle both event object and direct data submission
+    const isEvent = submissionData.preventDefault;
+    if (isEvent) {
+      submissionData.preventDefault();
+    }
+  
+    console.log('Selected Account:', selectedAccount);
+    console.log('Submission Data:', submissionData);
+    
     setErrors("");
-
-    if (!amount) {
-      setErrors("Amount fields is required.");
+  
+    // Determine the amount value with proper fallback
+    const submittedAmount = isEvent ? amount : submissionData?.amount;
+    const finalAmount = submittedAmount || selectedAccount?.sellingPrice;
+  
+    // Validation
+    if (!finalAmount) {
+      setErrors("Amount field is required.");
       return;
     }
-
-    if (isNaN(amount) || parseFloat(amount) <= 0) {
+  
+    if (isNaN(finalAmount) || parseFloat(finalAmount) <= 0) {
       setErrors("Please enter a valid amount.");
       return;
     }
-
+  
+    // Prepare the request data
     const details = { 
       accountNumber: selectedAccount.accountNumber,
-      accountManagerId:selectedAccount.accountManagerId,
-      branchId:selectedAccount.branchId,
-      accountTypeId:selectedAccount._id,
-      customerId:customerId, 
-      bankName,
-      bankAccountNumber,
-      accountName,
-      package:packageType,
-      channelOfWithdrawal:withdrawalType,
-      amount: parseFloat(amount) 
+      packageNumber,
+      accountManagerId: selectedAccount.accountManagerId,
+      branchId: selectedAccount.branchId,
+      accountTypeId: selectedAccount._id,
+      customerId: customerId, 
+      bankName: bankName || "",
+      bankAccountNumber: bankAccountNumber || "",
+      accountName: accountName || "",
+      productName: submissionData?.productName || productName || selectedAccount?.productName,
+      shippingAddress: submissionData?.shippingAddress || shippingAddress,
+      package: packageType,
+      channelOfWithdrawal: withdrawalType || "shipping", // Default to shipping if not specified
+      amount: parseFloat(finalAmount)
     };
-    const data = {details}
-    console.log('data',data)
+  
+    const data = { details };
+    console.log('Final Submission Data:', data);
+    
     dispatch(createCustomerWithdrawalRequestRequest(data));
+  
+    // Reset form state
     setAmount("");
     setBankName("");
     setBankAccountNumber("");
     setAccountName("");
     setWithdrawalType("");
-    setShowCustomerWithdrawalRequestModal(false);
+    setShippingAddress("");
+    setProductName("");
+    setShowDSCustomerWithdrawalRequestModal(false);
+    setShowSBCustomerWithdrawalRequestModal(false);
+    setShowFDCustomerWithdrawalRequestModal(false);
+    setShowSuccessModal(true); // Show success modal
   };
 
   useEffect(() => {
@@ -134,46 +165,77 @@ const CustomerAccountDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-50 p-2 md:p-6">
       {loading && <Loader />}
      
       {/* Header */}
-      <header className="mb-6 mt-4 md:mt-6 bg-white p-4 rounded-lg shadow-sm">
+      <header className="mb-2 mt-4 md:mt-6 md:px-10 bg-white p-2 rounded-lg shadow-sm">
       <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
   <strong>Welcome,</strong> {customerName}
 </h1>
-        <div className="mt-3 space-y-2 text-gray-700">
-          <p><strong>Account Number:</strong> {deposit?.account?.accountNumber}</p>
-          {/* <p><strong>Total Balance:</strong> ₦{deposit?.account?.ledgerBalance}</p> */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <span>
-              <strong>Free to withdraw:</strong> ₦{deposit?.account?.availableBalance?.toLocaleString('en-US')}
-            </span>
-            <button
-              onClick={() => accountTransaction(deposit?.account?._id)}
-              className="text-blue-600 hover:text-blue-800 flex items-center"
-            >
-              <FontAwesomeIcon icon={faFolderOpen} title="View Transactions" className="mr-1" />
-              <span className="text-sm">View Transactions</span>
-            </button>
-            <a
-              href="https://wa.me/+2348026211164"
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-green-700 text-green-600 flex items-center"
-              title="Chat on WhatsApp"
-            >
-              <FaWhatsapp className="text-7xl" />
-              <span className="ml-1 text-sm">Chat Support</span>
-            </a>
-          </div>
-        </div>
+<div className="space-y-2 text-gray-700">
+  <p><strong>Account Number:</strong> {deposit?.account?.accountNumber}</p>
+  <div className="mt-3">
+    <strong>Free to withdraw:</strong> ₦{deposit?.account?.availableBalance?.toLocaleString('en-US')}
+  </div>
+  <div className="flex justify-between items-start">
+    {/* WhatsApp Support - Left Side (Larger) */}
+    <a
+      href="https://wa.me/+2348026211164"
+      target="_blank"
+      rel="noreferrer"
+      className="flex flex-col items-center text-green-600 hover:text-green-800"
+      title="Chat on WhatsApp"
+    >
+      <FaWhatsapp className="text-8xl mb-1" />
+      <span className="text-sm">Chat with us</span>
+    </a>
+
+    {/* Right Side Buttons */}
+    <div className="flex flex-col space-y-1 items-end">
+      {/* View Transactions Button */}
+      <button
+        onClick={() => accountTransaction(deposit?.account?._id)}
+        className="flex items-center text-blue-600 hover:text-blue-800 space-x-2"
+      >
+        <FontAwesomeIcon icon={faFolderOpen} className="text-lg" />
+        <span>View Transactions</span>
+      </button>
+
+      {/* Request Withdrawal Button */}
+      <button
+        onClick={() => {
+          setSelectedAccount(deposit?.account);
+          setPackageType('FW');
+          setPackageNumber(deposit?.account?.accountNumber);
+          setShowDSCustomerWithdrawalRequestModal(true);
+        }}
+        className="flex items-center text-red-600 hover:text-red-800 space-x-2"
+      >
+        <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg text-red-500" />
+        <span>Request</span>
+      </button>
+
+      {/* Request History Button */}
+      <button
+        onClick={() => {/* Add your request history handler here */}}
+        className="flex items-center text-purple-600 hover:text-purple-800 space-x-2"
+      >
+        <FontAwesomeIcon icon={faHistory} className="text-lg" />
+        <span>Request History</span>
+      </button>
+    </div>
+  </div>
+
+  {/* Available Balance - Moved below the buttons row */}
+
+</div>
       </header>
 
    {/* Commercial Bank Details Section */}
-<div className="mb-6 bg-gradient-to-r from-indigo-700 to-blue-800 text-white p-5 rounded-xl shadow-lg">
+<div className="mb-2 bg-gradient-to-r from-indigo-700 to-blue-800 text-white p-1 rounded-xl shadow-lg">
   <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-    <div className="flex items-center mb-3 md:mb-0">
+    <div className="flex items-center mb-2 md:mb-0">
       <FontAwesomeIcon icon={faLandmark} className="text-2xl mr-3" />
       <div>
         <h2 className="text-sm font-bold">PAY TO THIS ACCOUNT, SEND US RECIEPT ON WHATSAPP, WE WILL CREDIT YOUR ACCOUNT WITH US.</h2>
@@ -182,9 +244,9 @@ const CustomerAccountDashboard = () => {
   
   </div>
   
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
     {/* Bank Account Information */}
-    <div className="bg-white bg-opacity-10 p-4 rounded-lg">
+    <div className="bg-white bg-opacity-10 p-2 rounded-lg">
       <h3 className="font-semibold mb-2 flex items-center">
         <FontAwesomeIcon icon={faCircleInfo} className="mr-2" />
         Account Details
@@ -210,8 +272,16 @@ const CustomerAccountDashboard = () => {
   </div>
 </div>
 
+
+
+      {/* Main Content */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left Panel - Account Details */}
+        <div className="bg-white p-4 rounded-lg shadow-sm md:col-span-2">
+        <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2 flex items-center gap-3">
+  <strong>Accounts</strong>
       {/* Account Type Quick Info */}
-      <div className="flex space-x-2 mb-4">
+      <div className="flex space-x-2 mb-1">
         <div 
           className="cursor-pointer bg-blue-500 text-white w-8 h-8 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors"
           onClick={() => handleAccountTypeClick('DS')}
@@ -235,17 +305,6 @@ const CustomerAccountDashboard = () => {
         </div>
   
       </div>
-
-      {/* Main Content */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Left Panel - Account Details */}
-        <div className="bg-white p-4 rounded-lg shadow-sm md:col-span-2">
-        <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2 flex items-center gap-3">
-  <strong>Accounts</strong>
-  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-teal-400 
-                  font-medium text-sm md:text-base animate-text-shimmer hover:animate-none">
-    (Check statement to confirm deposit)
-  </span>
 </h2>
 
           {(Array.isArray(newSubAccount?.dsAccount) && newSubAccount.dsAccount.length > 0) || 
@@ -256,9 +315,9 @@ const CustomerAccountDashboard = () => {
               {Array.isArray(newSubAccount?.dsAccount) &&
   newSubAccount.dsAccount.map((account, index) => {
     // Find matching withdrawal request for this account
-    const matchingRequest = Array.isArray(withdrawalRequest)
-    ? withdrawalRequest.find(request => request.accountTypeId === account._id)
-    : null;
+    // const matchingRequest = Array.isArray(withdrawalRequest)
+    // ? withdrawalRequest.find(request => request.accountTypeId === account._id)
+    // : null;
 
     return (
       <li
@@ -296,7 +355,7 @@ const CustomerAccountDashboard = () => {
           </p>
         </div>
         <div>
-          <div>
+          {/* <div>
           {matchingRequest?.status && (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
       matchingRequest?.status.toLowerCase() === 'pending' 
@@ -313,34 +372,34 @@ const CustomerAccountDashboard = () => {
       </span>
     </span>
   )}
-          </div>
-        <div className="flex space-x-4">
-          
-          <button 
-            onClick={() => { 
-              setSelectedAccount(account); 
-              setPackageType('DS'); 
-              setShowCustomerWithdrawalRequestModal(true); 
-            }} 
-            className="text-red-600 hover:text-red-800"
-          >
-            <FontAwesomeIcon 
-              icon={faMoneyBillTransfer} 
-              className="text-lg md:text-lg text-red-500" 
-              title="Withdrawal"
-            />
-          </button>
-          <button 
-            onClick={() => accountTransaction(account._id)} 
-            className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
-          >
-            <FontAwesomeIcon 
-              className="text-lg md:text-lg" 
-              icon={faFolderOpen} 
-              title="View Transactions"
-            />
-          </button>
-        </div>
+          </div> */}
+          <div className="flex flex-col space-y-2">
+  <button
+    onClick={() => {
+      setSelectedAccount(account);
+      setPackageType('DS');
+      setPackageNumber(account.DSAccountNumber )
+      setShowDSCustomerWithdrawalRequestModal(true);
+    }}
+    className="flex items-center text-red-600 hover:text-red-800 space-x-2"
+  >
+    <FontAwesomeIcon
+      icon={faMoneyBillTransfer}
+      className="text-lg md:text-lg text-red-500"
+    />
+    <span className="text-xs">Request</span>
+  </button>
+  <button
+    onClick={() => accountTransaction(account._id)}
+    className="flex items-center text-blue-600 hover:text-blue-800 space-x-2"
+  >
+    <FontAwesomeIcon
+      className="text-lg md:text-lg"
+      icon={faFolderOpen}
+    />
+    <span className="text-xs">View Transactions</span>
+  </button>
+</div>
         </div>
       </li>
     );
@@ -350,9 +409,9 @@ const CustomerAccountDashboard = () => {
               {Array.isArray(newSubAccount?.fdAccount) &&
                 newSubAccount.fdAccount.map((account, index) => {
                       // Find matching withdrawal request for this account
-                      const matchingRequest = Array.isArray(withdrawalRequest)
-                      ? withdrawalRequest.find(request => request.accountTypeId === account._id)
-                      : null;
+                      // const matchingRequest = Array.isArray(withdrawalRequest)
+                      // ? withdrawalRequest.find(request => request.accountTypeId === account._id)
+                      // : null;
 
     return (
                   <li
@@ -377,7 +436,7 @@ const CustomerAccountDashboard = () => {
                       <p className="text-sm text-gray-600">Interest: ₦{account.expenseInterest?.toLocaleString('en-US') || 0}</p>
                     </div>
                     <div>
-          <div>
+          {/* <div>
           {matchingRequest?.status && (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
       matchingRequest?.status.toLowerCase() === 'pending' 
@@ -394,20 +453,34 @@ const CustomerAccountDashboard = () => {
       </span>
     </span>
   )}
-          </div>
-                    <div className="flex space-x-4">
-                    <button 
-                    onClick={() => { setSelectedAccount(account); setPackageType('FD'); setShowCustomerWithdrawalRequestModal(true); }} className="text-red-600 hover:text-red-800"
-                    >
-              <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg md:text-lg text-red-500" title="Withdrawal"/>
-             </button>
-                    <button 
-                      onClick={() => accountTransaction(account._id)} 
-                      className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
-                    >
-                      <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
-                    </button>
-                    </div>
+          </div> */}
+          <div className="flex flex-col space-y-2">
+  <button
+    onClick={() => {
+      setSelectedAccount(account);
+      setPackageType('FD');
+      setPackageNumber(account.FDAccountNumber )
+      setShowFDCustomerWithdrawalRequestModal(true);
+    }}
+    className="flex items-center text-red-600 hover:text-red-800 space-x-2"
+  >
+    <FontAwesomeIcon
+      icon={faMoneyBillTransfer}
+      className="text-lg md:text-lg text-red-500"
+    />
+    <span className="text-xs">Request</span>
+  </button>
+  <button
+    onClick={() => accountTransaction(account._id)}
+    className="flex items-center text-blue-600 hover:text-blue-800 space-x-2"
+  >
+    <FontAwesomeIcon
+      className="text-lg md:text-lg"
+      icon={faFolderOpen}
+    />
+    <span className="text-xs">View Transactions</span>
+  </button>
+</div>
                     </div>
                   </li>
     )
@@ -417,9 +490,9 @@ const CustomerAccountDashboard = () => {
               {Array.isArray(newSubAccount?.sbAccount) &&
                 newSubAccount.sbAccount.map((account, index) => {
                     // Find matching withdrawal request for this account
-                    const matchingRequest = Array.isArray(withdrawalRequest)
-                    ? withdrawalRequest.find(request => request.accountTypeId === account._id)
-                    : null;
+                    // const matchingRequest = Array.isArray(withdrawalRequest)
+                    // ? withdrawalRequest.find(request => request.accountTypeId === account._id)
+                    // : null;
 
   return (
                   <li
@@ -458,7 +531,7 @@ const CustomerAccountDashboard = () => {
                       <p className="text-xs text-gray-600">Balance: ₦{account.balance?.toLocaleString('en-US') || 0}</p>
                     </div>
                     <div>
-                    <div>
+                    {/* <div>
   {matchingRequest?.status && (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
       matchingRequest?.status.toLowerCase() === 'pending' 
@@ -475,20 +548,34 @@ const CustomerAccountDashboard = () => {
       </span>
     </span>
   )}
+</div> */}
+<div className="flex flex-col space-y-2">
+  <button
+    onClick={() => {
+      setSelectedAccount(account);
+      setPackageType('SB');
+      setPackageNumber(account.SBAccountNumber )
+      setShowSBCustomerWithdrawalRequestModal(true);
+    }}
+    className="flex items-center text-red-600 hover:text-red-800 space-x-2"
+  >
+    <FontAwesomeIcon
+      icon={faMoneyBillTransfer}
+      className="text-lg md:text-lg text-red-500"
+    />
+    <span className="text-xs">Request</span>
+  </button>
+  <button
+    onClick={() => accountTransaction(account._id)}
+    className="flex items-center text-blue-600 hover:text-blue-800 space-x-2"
+  >
+    <FontAwesomeIcon
+      className="text-lg md:text-lg"
+      icon={faFolderOpen}
+    />
+    <span className="text-xs">View Transactions</span>
+  </button>
 </div>
-                    <div className="flex space-x-4">
-                    <button 
-                    onClick={() => { setSelectedAccount(account); setPackageType('SB'); setShowCustomerWithdrawalRequestModal(true); }} className="text-red-600 hover:text-red-800"
-                    >
-              <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg md:text-lg text-red-500" title="Withdrawal"/>
-             </button>
-                    <button 
-                      onClick={() => accountTransaction(account._id)} 
-                      className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-100"
-                    >
-                      <FontAwesomeIcon className="text-lg md:text-lg" icon={faFolderOpen} title="View Transactions"/>
-                    </button>
-                    </div>
                     </div>
                   </li>
   )
@@ -502,7 +589,7 @@ const CustomerAccountDashboard = () => {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-1">
           {/* Desktop Right Panel - Transactions */}
           <div className="hidden md:block bg-white p-4 rounded-lg shadow-sm">
             <h2 className="text-lg font-bold mb-4 text-gray-800 border-b pb-2">Transaction History</h2>
@@ -527,8 +614,8 @@ const CustomerAccountDashboard = () => {
           </div>
 
           {/* Advertisement Section */}
-          <div className="bg-white p-0 rounded-lg shadow-sm overflow-hidden">
-            <div className="p-3 border-b">
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="p-1 border-b">
               <h3 className="font-semibold text-gray-700">Special Offer</h3>
             </div>
             <div className="aspect-w-16 aspect-h-9">
@@ -616,14 +703,20 @@ const CustomerAccountDashboard = () => {
         </div>
       )}
 
-{showCustomerWithdrawalRequestModal && (
+{showDSCustomerWithdrawalRequestModal && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
       <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
         <FontAwesomeIcon icon={faMoneyBillWave} className="text-green-600" />
         Withdrawal Request
       </h3>
-      
+            {/* Information paragraph */}
+            {/* <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+        <p className="text-sm text-blue-800">
+        Cash withdrawals will be processed immediately, while bank transfers 
+        will be completed within 24 hours.
+        </p>
+      </div> */}
       {errors && <p className="text-red-600 mb-4 text-sm">{errors}</p>}
       
       <form onSubmit={handleCustomerWithdrawalRequest}>
@@ -712,7 +805,7 @@ const CustomerAccountDashboard = () => {
         <div className="flex justify-end gap-3 mt-6">
           <button
             type="button"
-            onClick={() => setShowCustomerWithdrawalRequestModal(false)}
+            onClick={() => setShowDSCustomerWithdrawalRequestModal(false)}
             className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
           >
             Cancel
@@ -725,6 +818,235 @@ const CustomerAccountDashboard = () => {
           </button>
         </div>
       </form>
+    </div>
+  </div>
+)}
+{showFDCustomerWithdrawalRequestModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
+      <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+        <FontAwesomeIcon icon={faMoneyBillWave} className="text-green-600" />
+        Withdrawal Request
+      </h3>
+      
+      {/* Information paragraph */}
+      {/* <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+        <p className="text-sm text-blue-800">
+          Cash withdrawals will be processed immediately, while bank transfers 
+          will be completed within 24 hours.
+        </p>
+      </div> */}
+            {/* Information paragraph */}
+            <div className="mb-4 p-3 bg-red-500 rounded-md border border-blue-100">
+        <p className="text-sm text-white">
+    Withdrawing before maturity date will attract penalty charge.
+        </p>
+      </div>
+      {errors && <p className="text-red-600 mb-4 text-sm">{errors}</p>}
+      
+      <form onSubmit={handleCustomerWithdrawalRequest}>
+        {/* Withdrawal Type Selection */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Withdrawal Method</label>
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={() => setWithdrawalType('cash')}
+              className={`px-4 py-2 rounded-md flex-1 ${
+                withdrawalType === 'cash' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              Cash
+            </button>
+            <button
+              type="button"
+              onClick={() => setWithdrawalType('transfer')}
+              className={`px-4 py-2 rounded-md flex-1 ${
+                withdrawalType === 'transfer' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              Bank Transfer
+            </button>
+          </div>
+        </div>
+
+        {/* Amount Field */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Amount</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="Enter amount"
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+
+        {/* Bank Details (Conditional) */}
+        {withdrawalType === 'transfer' && (
+          <>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Bank Name</label>
+              <input
+                type="text"
+                value={bankName}
+                onChange={(e) => setBankName(e.target.value)}
+                placeholder="Enter bank name"
+                className="w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Account Name</label>
+              <input
+                type="text"
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
+                placeholder="Enter account name"
+                className="w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Account Number</label>
+              <input
+                type="text"
+                value={bankAccountNumber}
+                onChange={(e) => setBankAccountNumber(e.target.value)}
+                placeholder="Enter account number"
+                className="w-full border border-gray-300 rounded-md p-2"
+                required
+              />
+            </div>
+          </>
+        )}
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => setShowFDCustomerWithdrawalRequestModal(false)}
+            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
+            {withdrawalType === 'cash' ? 'Request Cash' : 'Request Transfer'}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+{showSBCustomerWithdrawalRequestModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full">
+      <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+        <FontAwesomeIcon icon={faMoneyBillWave} className="text-green-600" />
+        Shipping Details
+      </h3>
+            {/* Information paragraph */}
+            {/* <div className="mb-4 p-3 bg-blue-50 rounded-md border border-blue-100">
+        <p className="text-sm text-blue-800">
+          Please select your withdrawal method and enter the required details. 
+          Cash withdrawals will be processed immediately, while bank transfers 
+          may take 1-2 business days to complete.
+        </p>
+      </div> */}
+      {errors && <p className="text-red-600 mb-4 text-sm">{errors}</p>}
+      
+      {/* Product Info Display */}
+      <div className="mb-4 p-3 bg-gray-50 rounded-md">
+        <div className="flex justify-between mb-1">
+          <span className="font-medium">Product:</span>
+          <span>{selectedAccount.productName}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Price:</span>
+          <span>₦{selectedAccount.sellingPrice}</span>
+        </div>
+      </div>
+
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handleCustomerWithdrawalRequest({
+          amount: selectedAccount.sellingPrice,
+          productName: selectedAccount.productName,
+          shippingAddress
+        });
+      }}>
+        {/* Hidden fields aren't needed since we're passing values directly */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">Shipping Address</label>
+          <input
+            type="text"
+            value={shippingAddress}
+            onChange={(e) => setShippingAddress(e.target.value)}
+            placeholder="Enter full shipping address"
+            className="w-full border border-gray-300 rounded-md p-2"
+            required
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => setShowSBCustomerWithdrawalRequestModal(false)}
+            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
+            Confirm Order
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+{/* Success Modal */}
+{showSuccessModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-full text-center">
+      {/* Success Icon */}
+      <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+        <FontAwesomeIcon 
+          icon={faCircleCheck} 
+          className="text-green-600 text-xl"
+        />
+      </div>
+      
+      {/* Success Message */}
+      <h3 className="text-lg font-bold mb-2">
+        Request Successful!
+      </h3>
+      <div className="mb-6">
+        <p className="text-gray-600 text-sm">
+        THANK YOU FOR SUBMITTING YOUR REQUEST, OUR STANDARD PROCESSING TIME IS 24 TO 48 HOURS. YOU WILL RECEIVE A CONFIRMATION ONCE IT'S COMPLETED. FEEL FREE TO REACH OUT IF YOU NEED ANY UPDATES.
+        </p>
+      </div>
+      
+      {/* OK Button */}
+      <div className="flex justify-center">
+        <button
+          onClick={() => setShowSuccessModal(false)}
+          className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+        >
+          OK
+        </button>
+      </div>
     </div>
   </div>
 )}

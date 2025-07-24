@@ -42,7 +42,7 @@ function App() {
         )}
 
         {/* Main Content */}
-        <div className="flex flex-col flex-1 pt-20">
+        <div className="flex flex-col flex-1 pt-2">
           {/* Topbar */}
           <Topbar
             isLoggedIn={!!token}
