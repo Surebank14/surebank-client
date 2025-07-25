@@ -50,6 +50,16 @@ const customerAccountSlice = createSlice({
         fetchCustomerSubAccountFailure:(state,action)=>{
             state.error = action.payload
         },
+        // fetchCustomerWithdrawalRequestRequest:(state)=>{
+        //     state.loading = true
+        // },
+        // fetchCustomerWithdrawalRequestSuccess:(state,action)=>{
+        //     state.customerAccount= action.payload;
+        //     state.loading=false
+        // },
+        // fetchCustomerWithdrawalRequestFailure:(state,action)=>{
+        //     state.error = action.payload
+        // },
    
     }
 })
@@ -67,6 +77,9 @@ export const {
     fetchCustomerSubAccountRequest,
     fetchCustomerSubAccountSuccess,
     fetchCustomerSubAccountFailure,
+    // fetchCustomerWithdrawalRequestRequest,
+    // fetchCustomerWithdrawalRequestSuccess,
+    // fetchCustomerWithdrawalRequestFailure,
 
 } = customerAccountSlice.actions
 

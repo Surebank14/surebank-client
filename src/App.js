@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import Login from "./Components/CustomerLogin";
 import CustomerForgotPassword from "./Components/CustomerForgotPassword";
 import CustomerAccountDashboard from "./Components/CustomerAccountDashboard";
+import ViewCustomerWithdrawalRequest from "./Components/ViewCustomerWithdrawalRequest";
 import Topbar from "./Components/TopBar";
 // import Sidebar from "./Components/SideBar";
 
@@ -53,6 +54,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/forgotpassword" element={<CustomerForgotPassword />} />
           <Route path="/customeraccountdashboard/:customerId" element={<CustomerAccountDashboard />} />
+          <Route path="/viewcustomerwithdrawalrequest" element={<ViewCustomerWithdrawalRequest />} />
         </Routes>
         </div>
         </div>

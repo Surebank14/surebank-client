@@ -8,7 +8,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import Loader from "./Loader";
 import Tablebody from "./Table/TransactionTableBody";
 import Tablehead from "./Table/TransactionTableHead";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import advertImage from '../images/rent image.jpg'
 
 const CustomerAccountDashboard = () => {
@@ -222,7 +222,9 @@ const CustomerAccountDashboard = () => {
         className="flex items-center text-purple-600 hover:text-purple-800 space-x-2"
       >
         <FontAwesomeIcon icon={faHistory} className="text-lg" />
+        <Link to='/viewcustomerwithdrawalrequest'>
         <span>Request History</span>
+        </Link>
       </button>
     </div>
   </div>
