@@ -481,6 +481,9 @@ function* fetchCustomerAccountSaga(action) {
   const { customerId } = action.payload;
   try {
     const token = localStorage.getItem('authToken');
+    if(!token){
+      window.location.href = '/';
+    }
     // const branchId = localStorage.getItem('branchId');
     const config = {
         headers: {
@@ -521,7 +524,7 @@ function* fetchCustomerAccountSaga(action) {
 
   } catch (error) {  if (error.response && error.response.status === 401) {
             localStorage.removeItem('authToken');
-            // window.location.href = '/';
+            window.location.href = '/';
           }
     console.error("Customer Account Fetch Error:", error.message);
     yield put(fetchCustomerAccountFailure(error.message));

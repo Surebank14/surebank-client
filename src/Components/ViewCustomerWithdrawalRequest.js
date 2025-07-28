@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCustomerAccountRequest, fetchCustomerWithdrawalRequestRequest } from '../redux/slices/depositSlice';
+import { fetchCustomerAccountRequest} from '../redux/slices/depositSlice';
 
 const ViewCustomerWithdrawalRequest = () => {
     const customerId = localStorage.getItem('customerId');
@@ -11,7 +11,7 @@ const ViewCustomerWithdrawalRequest = () => {
     useEffect(() => {
         const data = { customerId: customerId };
         dispatch(fetchCustomerAccountRequest(data));
-        dispatch(fetchCustomerWithdrawalRequestRequest(data));
+        // dispatch(fetchCustomerWithdrawalRequestRequest(data));
     }, [dispatch, customerId]);
 
     useEffect(() => {
@@ -55,7 +55,7 @@ const ViewCustomerWithdrawalRequest = () => {
                     {/* Mobile Cards View */}
                     <div className="md:hidden space-y-4 p-4">
                         {deposit?.withdrawalRequest?.length > 0 ? (
-                            deposit.withdrawalRequest.map((customer) => (
+                            deposit?.withdrawalRequest?.map((customer) => (
                                 <div key={customer?._id} className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                                     <div className="space-y-2">
                                         <div className="flex justify-between">
@@ -110,7 +110,7 @@ const ViewCustomerWithdrawalRequest = () => {
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {deposit?.withdrawalRequest?.length > 0 ? (
-                                    deposit.withdrawalRequest.map((customer) => (
+                                    deposit?.withdrawalRequest?.map((customer) => (
                                         <tr key={customer?._id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">

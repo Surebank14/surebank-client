@@ -19,8 +19,6 @@ const CustomerAccountDashboard = () => {
   const { loading, deposit } = useSelector((state) => state.deposit);
   const newSubAccount = deposit?.subAccount;
   // const withdrawalRequest = deposit?.withdrawalRequest;
-  console.log('>>>>>>???',newSubAccount)
-  console.log('status',deposit)
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [showMobileModal, setShowMobileModal] = useState(false);
   const [showDSCustomerWithdrawalRequestModal, setShowDSCustomerWithdrawalRequestModal] = useState(false);
@@ -145,7 +143,7 @@ const CustomerAccountDashboard = () => {
     },
     SB: {
       title: "Savings (SB) Account",
-      description: "The Savings account is your main account for savings and purchasing of item. Is for you to save towards buying an item and serves as your primary purchasing account.",
+      description: "The Savings account is for savings and purchasing of item only. Is for you to save towards buying an item and serves as your primary purchasing account.",
       features: [
         "Save to buy an item",
         "Unlimited deposits",
