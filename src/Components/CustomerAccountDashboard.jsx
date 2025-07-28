@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAccountTransactionRequest } from "../redux/slices/createAccountSlice";
 import { fetchCustomerAccountRequest,createCustomerWithdrawalRequestRequest,fetchCustomerWithdrawalRequestRequest } from '../redux/slices/depositSlice';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen,faMoneyBillTransfer,  faCircleInfo, faTimes, faLandmark, faMoneyBillWave,faCircleCheck,faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen,faMoneyBillTransfer,  faCircleInfo, faTimes, faLandmark, faMoneyBillWave,faCircleCheck,faHistory,faCopy } from '@fortawesome/free-solid-svg-icons';
 import { FaWhatsapp } from 'react-icons/fa';
 import Loader from "./Loader";
 import Tablebody from "./Table/TransactionTableBody";
@@ -37,6 +37,8 @@ const CustomerAccountDashboard = () => {
   const [packageType, setPackageType] = useState()
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errors, setErrors] = useState("");
+  const [copiedId, setCopiedId] = useState(null);
+
 
   const handleCustomerWithdrawalRequest = (submissionData) => {
     // Handle both event object and direct data submission
@@ -129,6 +131,13 @@ const CustomerAccountDashboard = () => {
     setCurrentAccountType(type);
     setShowInfoModal(true);
   };
+
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(text);
+    setTimeout(() => setCopiedId(null), 2000);
+};
 
   const accountTypeInfo = {
     DS: {
@@ -262,7 +271,20 @@ const CustomerAccountDashboard = () => {
         </div>
         <div>
           <p className="text-xs opacity-80">Account Number</p>
-          <p className="font-medium">5601047448 </p>
+          <div className="flex items-center">
+  <span className="font-medium mr-2">5601047448</span>
+  <button
+    onClick={() => copyToClipboard('5601047448')}
+    className="text-gray-400 hover:text-blue-500 transition-colors"
+    title="Copy account number"
+    aria-label="Copy to clipboard"
+  >
+    <FontAwesomeIcon icon={faCopy} className="text-sm text-white" />
+    {copiedId === '5601047448' && (
+      <span className="ml-1 text-xs text-white">Copied!</span>
+    )}
+  </button>
+</div>
         </div>
       </div>
     </div>
