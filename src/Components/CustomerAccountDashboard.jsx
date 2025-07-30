@@ -47,23 +47,44 @@ const CustomerAccountDashboard = () => {
       submissionData.preventDefault();
     }
   
-    console.log('Selected Account:', selectedAccount);
-    console.log('Submission Data:', submissionData);
     
     setErrors("");
   
+    // Safely calculate available balance with fallbacks
+    const FDAmount = (selectedAccount?.fdamount || 0) - (selectedAccount?.chargeInterest || 0);
+    const checkBalance = 
+      parseFloat(selectedAccount?.balance) || 
+      parseFloat(selectedAccount?.availableBalance) || 
+      parseFloat(selectedAccount?.totalContribution) || 
+      FDAmount || 
+      0; // Final fallback to 0
+  
+ 
+  
     // Determine the amount value with proper fallback
     const submittedAmount = isEvent ? amount : submissionData?.amount;
-    const finalAmount = submittedAmount || selectedAccount?.sellingPrice;
+    const finalAmount = parseFloat(submittedAmount || selectedAccount?.sellingPrice || 0);
   
     // Validation
-    if (!finalAmount) {
-      setErrors("Amount field is required.");
+    if (!finalAmount || finalAmount <= 0) {
+      setErrors("Please enter a valid amount.");
       return;
     }
   
-    if (isNaN(finalAmount) || parseFloat(finalAmount) <= 0) {
-      setErrors("Please enter a valid amount.");
+    if (isNaN(finalAmount)) {
+      setErrors("Invalid amount entered.");
+      return;
+    }
+  
+    // Balance validation
+    if (isNaN(checkBalance)) {
+      setErrors("Cannot determine available balance.");
+      return;
+    }
+  
+    if (finalAmount > checkBalance) {
+      const formattedBalance = new Intl.NumberFormat('en-US').format(Math.round(checkBalance));
+      setErrors(`Insufficient balance. Available: ₦${formattedBalance}`);
       return;
     }
   
@@ -81,12 +102,12 @@ const CustomerAccountDashboard = () => {
       productName: submissionData?.productName || productName || selectedAccount?.productName,
       shippingAddress: submissionData?.shippingAddress || shippingAddress,
       package: packageType,
-      channelOfWithdrawal: withdrawalType || "shipping", // Default to shipping if not specified
-      amount: parseFloat(finalAmount)
+      channelOfWithdrawal: withdrawalType || "shipping",
+      amount: finalAmount
     };
   
     const data = { details };
-    console.log('Final Submission Data:', data);
+    console.log('Withdrawal Request Data:', data);
     
     dispatch(createCustomerWithdrawalRequestRequest(data));
   
@@ -101,7 +122,7 @@ const CustomerAccountDashboard = () => {
     setShowDSCustomerWithdrawalRequestModal(false);
     setShowSBCustomerWithdrawalRequestModal(false);
     setShowFDCustomerWithdrawalRequestModal(false);
-    setShowSuccessModal(true); // Show success modal
+    setShowSuccessModal(true);
   };
 
   useEffect(() => {
@@ -199,41 +220,38 @@ const CustomerAccountDashboard = () => {
     </a>
 
     {/* Right Side Buttons */}
-    <div className="flex flex-col space-y-1 items-end">
-      {/* View Transactions Button */}
-      <button
-        onClick={() => accountTransaction(deposit?.account?._id)}
-        className="flex items-center text-blue-600 hover:text-blue-800 space-x-2"
-      >
-        <FontAwesomeIcon icon={faFolderOpen} className="text-lg" />
-        <span>View Transactions</span>
-      </button>
+    <div className="flex flex-col items-end space-y-3">
+  {/* View Transactions Button */}
+  <button
+    onClick={() => accountTransaction(deposit?.account?._id)}
+    className="flex flex-row-reverse items-center pr-2 gap-2 text-blue-600 hover:text-blue-800"
+  >
+    <span>View Transactions</span>
+    <FontAwesomeIcon icon={faFolderOpen} className="text-lg" />
+  </button>
 
-      {/* Request Withdrawal Button */}
-      <button
-        onClick={() => {
-          setSelectedAccount(deposit?.account);
-          setPackageType('FW');
-          setPackageNumber(deposit?.account?.accountNumber);
-          setShowDSCustomerWithdrawalRequestModal(true);
-        }}
-        className="flex items-center text-red-600 hover:text-red-800 space-x-2"
-      >
-        <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg text-red-500" />
-        <span>Request</span>
-      </button>
+  {/* Request Withdrawal Button */}
+  <button
+    onClick={() => {
+      setSelectedAccount(deposit?.account);
+      setPackageType('Free To Withdraw');
+      setPackageNumber(deposit?.account?.accountNumber);
+      setShowDSCustomerWithdrawalRequestModal(true);
+    }}
+    className="flex flex-row-reverse pr-20 items-center gap-2 text-red-600 hover:text-red-800"
+  >
+    <span>Request</span>
+    <FontAwesomeIcon icon={faMoneyBillTransfer} className="text-lg text-red-500" />
+  </button>
 
-      {/* Request History Button */}
-      <button
-        onClick={() => {/* Add your request history handler here */}}
-        className="flex items-center text-purple-600 hover:text-purple-800 space-x-2"
-      >
-        <FontAwesomeIcon icon={faHistory} className="text-lg" />
-        <Link to='/viewcustomerwithdrawalrequest'>
-        <span>Request History</span>
-        </Link>
-      </button>
-    </div>
+  {/* Request History Button */}
+  <div className="flex flex-row-reverse pr-8 items-center gap-2 text-purple-600 hover:text-purple-800">
+    <Link to='/viewcustomerwithdrawalrequest' className="flex flex-row-reverse items-center gap-2">
+      <span>Request History</span>
+      <FontAwesomeIcon icon={faHistory} className="text-lg" />
+    </Link>
+  </div>
+</div>
   </div>
 
   {/* Available Balance - Moved below the buttons row */}
