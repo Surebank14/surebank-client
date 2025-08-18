@@ -221,14 +221,7 @@ const CustomerAccountDashboard = () => {
 
     {/* Right Side Buttons */}
     <div className="flex flex-col items-end space-y-3">
-  {/* View Transactions Button */}
-  <button
-    onClick={() => accountTransaction(deposit?.account?._id)}
-    className="flex flex-row-reverse items-center pr-2 gap-2 text-blue-600 hover:text-blue-800"
-  >
-    <span>View Transactions</span>
-    <FontAwesomeIcon icon={faFolderOpen} className="text-lg" />
-  </button>
+
 
   {/* Request Withdrawal Button */}
   <button
@@ -251,6 +244,14 @@ const CustomerAccountDashboard = () => {
       <FontAwesomeIcon icon={faHistory} className="text-lg" />
     </Link>
   </div>
+    {/* View Transactions Button */}
+  <button
+    onClick={() => accountTransaction(deposit?.account?._id)}
+    className="flex flex-row-reverse items-center pr-2 gap-2 text-blue-600 hover:text-blue-800"
+  >
+    <span>View Transactions</span>
+    <FontAwesomeIcon icon={faFolderOpen} className="text-lg" />
+  </button>
 </div>
   </div>
 
